@@ -23,21 +23,16 @@ public class LoopCalculationExecutorTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-
-    @Mock
-    private OperationConstructor operationConstructor;
-
-    @Mock
-    private UserInteractor userInteractor;
-
-    @Mock
-    private UserTextPrinter userTextPrinter;
-
-    @Mock
-    private CalculationResultsPrinter calculationResultsPrinter;
-
     @InjectMocks
     public LoopCalculationExecutor loopCalculationExecutor;
+    @Mock
+    private OperationConstructor operationConstructor;
+    @Mock
+    private UserInteractor userInteractor;
+    @Mock
+    private UserTextPrinter userTextPrinter;
+    @Mock
+    private CalculationResultsPrinter calculationResultsPrinter;
 
     @Before
     public void setUp() {
@@ -48,13 +43,33 @@ public class LoopCalculationExecutorTest {
     public void testSingleApplicationExecution() throws Exception {
         CalculationStatement statement = new CalculationStatement(new BigDecimal(10), new BigDecimal(5), CalculationOperations.ADDITION);
         when(operationConstructor.fetchCalculationDetails()).thenReturn(statement);
+        assertEquals(statement.getFirstOperand(), new BigDecimal(10));
+        assertEquals(statement.getSecondOperand(), new BigDecimal(5));
+        assertEquals(statement.getOperation(), CalculationOperations.ADDITION);
+
         when(userInteractor.writeAndGetResponse("Continue? Type TRUE for yes, FALSE - otherwise.")).thenReturn("False");
         loopCalculationExecutor.execute();
     }
 
     @Test
     public void continuousUsageTest() throws Exception {
+        CalculationStatement statement = new CalculationStatement(new BigDecimal(10), new BigDecimal(5), CalculationOperations.ADDITION);
+        when(operationConstructor.fetchCalculationDetails()).thenReturn(statement);
+        assertEquals(statement.getFirstOperand(), new BigDecimal(10));
+        assertEquals(statement.getSecondOperand(), new BigDecimal(5));
+        assertEquals(statement.getOperation(), CalculationOperations.ADDITION);
+
         when(userInteractor.writeAndGetResponse("Continue? Type TRUE for yes, FALSE - otherwise.")).thenReturn("True");
-        //loopCalculationExecutor.execute();
+
+        CalculationStatement statement2 = new CalculationStatement(new BigDecimal(11), new BigDecimal(6), CalculationOperations.SUBTRACTION);
+        when(operationConstructor.fetchCalculationDetails()).thenReturn(statement2);
+        assertEquals(statement2.getFirstOperand(), new BigDecimal(11));
+        assertEquals(statement2.getSecondOperand(), new BigDecimal(6));
+        assertEquals(statement2.getOperation(), CalculationOperations.SUBTRACTION);
+
+
+        when(userInteractor.writeAndGetResponse("Continue? Type TRUE for yes, FALSE - otherwise.")).thenReturn("False");
+        loopCalculationExecutor.execute();
     }
 }
+
