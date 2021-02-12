@@ -2,7 +2,9 @@ package clean.userinteraction;
 
 import clean.inputhandling.InputReader;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -14,6 +16,9 @@ import static org.testng.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 public class SystemOutUserInteractorTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
     private InputReader inputReader;
@@ -37,5 +42,15 @@ public class SystemOutUserInteractorTest {
         bo.flush();
         String allWrittenLines = new String(bo.toByteArray());
         assertEquals(allWrittenLines.trim(), "Text to user");
+    }
+
+    @Test
+    public void whenProvidedString_printItToConsole() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(bos));
+        userInteractor.write("text");
+        bos.flush();
+        String newText = new String(bos.toByteArray());
+        assertEquals(newText.trim(), "text");
     }
 }
